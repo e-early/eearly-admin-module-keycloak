@@ -1,0 +1,214 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../font/Montserrat-Medium.ttf') format('ttf');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+html,
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #00CCAC;
+    background: linear-gradient(0deg, rgba(0, 204, 172, 1) 0%, rgba(23, 161, 250, 1) 100%);
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body:before,
+body:after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    width: 50%;
+    height: 230px;
+    transform: translate(-100%, -50%);
+    background: url("../img/cardiograph.svg") no-repeat right center fixed;
+    z-index: -1;
+}
+
+body:after {
+    left: auto;
+    right: 50%;
+    transform: translate(100%, -50%) rotateY(180deg);
+}
+
+
+.login-page {
+    background: #FFF;
+    box-shadow: 0 0.5em 1em -0.125em hsla(221deg, 14%, 4%, 0.1), 0 0 0 1px hsla(221deg, 14%, 4%, 0.02);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-page-header {
+    position: relative;
+    margin-top: 100px;
+    margin-bottom: 24px;
+}
+
+.login-page-header:before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: url("../img/heart-handshake.svg") no-repeat center center;
+    background-size: contain;
+    transform: translateX(-50%);
+    margin-bottom: 1.5rem;
+    z-index: 3;
+
+}
+
+.login-page-header-title {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.login-form-header {
+    display: none;
+}
+
+#kc-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+}
+
+.form-group .login-form-control-label {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.form-group .login-form-control {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: none;
+    border-bottom: 1px solid #CCC;
+    outline: none;
+    min-width: 300px;
+}
+
+.form-group .login-form-control:focus {
+    border-bottom: 1px solid #00CCAC;
+}
+
+.form-group .login-form-control:hover {
+    border-bottom: 1px solid #17A1FA;
+}
+
+.form-group .login-form-input-group {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.form-group .login-form-input-error-message {
+    color: #FF0000;
+    font-size: 0.875rem;
+}
+
+.form-group .login-form-control:has(+ .login-form-input-error-message) {
+    border-bottom: 1px solid #FF0000;
+}
+
+.form-group .password-visibility-button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    opacity: 0.7;
+}
+
+.form-group .password-visibility-button .password-icon {
+    width: 100%;
+    height: 100%;
+    background: url("../img/eye.svg") no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+    display: block;
+}
+.form-group .password-visibility-button .password-icon:hover {
+    filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(90deg);
+}
+
+.form-group .password-visibility-button .password-icon-show {
+    background: url("../img/eye-slash.svg") no-repeat center center;
+}
+
+.form-group .button {
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-group .button.button-primary {
+    color: #FFF;
+    background-color: #00CCAC;
+}
+
+.form-group .button.button-primary:hover,
+.form-group .button.button-primary:focus-visible {
+    color: #FFF;
+    background-color: #00816F;
+}
+
+#kc-registration {
+    margin-top: 0.875rem;
+    text-transform: uppercase;
+    color: #555;
+    font-size: 0.875rem;
+}
+
+#kc-registration a {
+    color: #00CCAC;
+    text-decoration: none;
+}
+
+#kc-form-options {
+    margin-bottom: 1rem;
+}
+
+#kc-form-options a {
+    color: #17A1FA;
+    text-decoration: none;
+}
+
+/* override Chrome autofill background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    /* match your normal bg (or transparent) */
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    /* keep text color sane */
+    -webkit-text-fill-color: currentColor !important;
+    /* prevent the yellow flash */
+    transition: background-color 5000s ease-in-out 0s;
+}

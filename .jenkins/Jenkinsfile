@@ -1,0 +1,52 @@
+@Library('jenkins-cicd') _
+pipeline {
+    agent any
+
+    environment {
+        IMAGE = 'nexus.result.si/eearly-admin/eearly-admin-keycloak'
+    }
+
+    stages {
+        stage('Get artifact version') {
+            steps {
+                script {
+                    Map versionJson = readJSON file: './version.json'
+                    String artifactVersion = versionJson.version
+
+                    echo "Artifact Version: ${artifactVersion}"
+
+                    if (artifactVersion.contains('-SNAPSHOT')) {
+                        env.ENVIRONMENT = 'acceptance'
+                        env.TAG = 'latest'
+                    } else {
+                        env.ENVIRONMENT = 'staging'
+                        env.TAG = artifactVersion
+                    }
+
+                    echo "Environment: ${env.ENVIRONMENT}"
+                    echo "Tag: ${env.TAG}"
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'docker build --network host -t $IMAGE:$TAG .'
+            }
+        }
+        stage('Push to registry') {
+            steps {
+                pushImageToRegistry('eearly-admin-nexus-credentials', env.IMAGE, env.TAG)
+            }
+        }
+        stage('Deploy') {
+            steps {
+                deployDockerService('eearly-admin-ansible-vault', env.ENVIRONMENT, env.TAG)
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
