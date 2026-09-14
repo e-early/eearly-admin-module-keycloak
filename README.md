@@ -2,6 +2,81 @@
 
 This repository contains Jenkinsfiles and configuration to build and upload the Admin Keycloak artifact to Nexus.
 
+It packages a [Keycloak](https://www.keycloak.org/) image pre-loaded with:
+
+- the `eearly-admin` realm (`realm-config/eearly-admin-realm.json`) with clients `eearly-admin-service`, `eearly-admin-ui`, …
+- the `e-early-admin` custom login theme (`themes/e-early-admin`)
+
+---
+
+## Prerequisites
+
+| Requirement | Version / note |
+|-------------|----------------|
+| Docker | to build and run the image; Docker Compose is optional |
+
+No Java/Maven toolchain is needed — the image is built directly from the upstream Keycloak base image.
+
+## Run locally
+
+### 1. Build the image
+
+```bash
+docker build -t eearly-admin-keycloak .
+```
+
+This runs `kc.sh build` with the realm and theme baked in, matching what Jenkins ships to Nexus/production.
+
+### 2. Start a Postgres database for Keycloak
+
+```bash
+docker network create eearly-admin-keycloak-net
+
+docker run -d --name eearly-admin-keycloak-db \
+  --network eearly-admin-keycloak-net \
+  -e POSTGRES_DB=keycloak \
+  -e POSTGRES_USER=keycloak \
+  -e POSTGRES_PASSWORD=keycloak \
+  -p 5434:5432 \
+  postgres:17
+```
+
+### 3. Run Keycloak
+
+```bash
+docker run -d --name eearly-admin-keycloak \
+  --network eearly-admin-keycloak-net \
+  -e KEYCLOAK_ADMIN=admin \
+  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  -e KC_DB=postgres \
+  -e KC_DB_URL=jdbc:postgresql://eearly-admin-keycloak-db:5432/keycloak \
+  -e KC_DB_USERNAME=keycloak \
+  -e KC_DB_PASSWORD=keycloak \
+  -e KC_HOSTNAME=localhost \
+  -e KC_HTTP_ENABLED=true \
+  -p 8080:8080 \
+  -p 9001:9000 \
+  eearly-admin-keycloak \
+  start --optimized --import-realm
+```
+
+`9001` (host) → `9000` (container management port) is used instead of `9000` on the host to avoid clashing with `eearly-admin-module-service`, which listens on `9000` locally.
+
+### 4. Verify
+
+- Admin console: http://localhost:8080 (log in with `admin` / `admin`, as set above)
+- Health: http://localhost:9001/health/ready
+- **Realm settings → eearly-admin** should already exist, imported from `realm-config/eearly-admin-realm.json`
+- **Clients** should list `eearly-admin-service`, `eearly-admin-ui`, etc. — open a client's **Credentials** tab to fetch the secret needed by consuming services (see [eearly-admin-module-service](https://github.com/e-early/eearly-admin-module-service.git))
+
+### 5. Stop / clean up
+
+```bash
+docker rm -f eearly-admin-keycloak eearly-admin-keycloak-db
+docker network rm eearly-admin-keycloak-net
+```
+
+---
 
 ## Releasing
 
